@@ -182,15 +182,14 @@ function handlePrint({ text, printerType, ip, printerPort, retryCount = 0 }, don
 }
 
 // Start server with mainWindow
-function startServer(mainWindow) {
-  console.log("Starting server...");
+function startServer(mainWindow,appKey,cluster) {
   mainWindow.webContents.send(
     "update-log",
     "[Init] Ready to receive print jobs." // Initial log sent to UI
   );
   // Setup Pusher inside startServer so it can use mainWindow
-  const pusher = new Pusher("727d4c5680711508ffaa", {
-    cluster: "ap2",
+  const pusher = new Pusher(appKey, {
+    cluster: cluster,
     encrypted: true,
   });
 
@@ -222,10 +221,6 @@ function startServer(mainWindow) {
     sendLog("Unhandled Rejection: " + JSON.stringify(reason), mainWindow, true);
   });
 
-  // Example periodic log
-  setInterval(() => {
-    sendLog("📢 Server is running...", mainWindow, false); // Send periodic log to console, not UI
-  }, 10000);
 }
 
 module.exports.start = startServer;
