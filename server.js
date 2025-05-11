@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const escpos = require("escpos");
-const Pusher = require("pusher-js/node");
+const Pusher = require("pusher-js");
 const os = require("os");
 
 // Load printer connection modules
@@ -30,7 +30,7 @@ let sendLog = (message, mainWindow, isUIMessage = null) => {
   const entry = `[${formattedDate}] ${message}\n`;
 
   try {
-    const logDir = path.join(os.homedir(), "Documents", "POS Printer Logs");
+    const logDir = path.join(os.homedir(), "Documents", "RestroPrint Logs");
     if (!fs.existsSync(logDir)) {
       fs.mkdirSync(logDir, { recursive: true });
     }
