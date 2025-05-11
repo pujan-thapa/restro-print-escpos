@@ -1,13 +1,19 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const server = require("./server.js");
-const WinReg = require("winreg");
+const ElectronStore = require('electron-store');
+const Store = ElectronStore.default || ElectronStore; // <-- safe fallback for both CJS and ESM
+const store = new Store({ encryptionKey: '1qwd#$%sadwq12fdfe' });
 let mainWindow = null;
-// Get registry value for appKey or cluster
-async function getRegistryValue(name) {}
+// Get config value for appKey or cluster
+async function getRegistryValue(name) {
+  return store.get(name);
+}
 
-// Set registry value for appKey or cluster
-function setRegistryValue(name, value) {}
+// Set config value for appKey or cluster
+function setRegistryValue(name, value) {
+  store.set(name, value);
+}
 let pendingConfigResolve = null;
 
 // Handle config submission from renderer
@@ -23,7 +29,23 @@ ipcMain.on("submit-config", (event, data) => {
   }
 });
 // Check for configuration in the registry
-async function checkOrRequestConfig() {}
+async function checkOrRequestConfig() {
+  const appKey = await getRegistryValue("appKey");
+  const cluster = await getRegistryValue("cluster");
+
+  if (appKey && cluster) {
+    return { appKey, cluster };
+  }
+
+  return new Promise((resolve) => {
+    pendingConfigResolve = resolve;
+    if (mainWindow && mainWindow.webContents) {
+      mainWindow.webContents.send("request-config");
+    } else {
+      resolve({ appKey: null, cluster: null }); // Fallback if window is not ready
+    }
+  });
+}
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
