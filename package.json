@@ -17,8 +17,7 @@
     "express": "^4.21.2",
     "prod": "^1.0.1",
     "pusher-js": "^8.4.0",
-    "usb": "^2.15.0",
-    "winreg": "^1.2.5"
+    "usb": "^2.15.0"
   },
   "devDependencies": {
     "electron": "^36.2.0",
